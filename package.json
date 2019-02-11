@@ -1,0 +1,19 @@
+{
+  "name": "clock_in",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Josh Martin",
+  "license": "ISC",
+  "dependencies": {
+    "@serverless-chrome/lambda": "^1.0.0-55",
+    "dotenv": "^6.2.0",
+    "puppeteer": "^1.12.2",
+    "puppeteer-core": "^1.12.2",
+    "superagent": "^4.1.0"
+  }
+}
