@@ -1,39 +1,34 @@
+const puppeteer = require('puppeteer');
 const { utils } = require("./utils");
 
-const puppeteer = require('puppeteer');
-require('dotenv').config();
+function parseBool(val) { return val === true || val === "true" }
 
-const getData = async (
-    shouldToggleClock = true,
-    isDebugMode = false
-) => {
-    const debugJson = isDebugMode ? { headless: false, devtools: true } : {};
-    const browser = await puppeteer.launch(debugJson)
+exports.screenshot = async (req, res) => {
+    const userData = req.query;
+    console.log(userData)
+    if (Object.keys(userData).length < 3 ){
+        return res.send('The query you have suggested is wrong')
+    }
+    const browser = await puppeteer.launch({args: ['--no-sandbox']})
     const page = await browser.newPage()
     const funcs = await new utils(browser, page)
 
     await funcs.page.goto('https://apps.iu.edu/kpme-prd/Clock.do')
     await funcs.login(
-        process.env.USERNAME,
-        process.env.PASSWORD
+        userData.username,
+        userData.password
     )
 
     const clockActionSelector = 'input[name="clockAction"]'
     await funcs.waitForSelector(clockActionSelector)
 
-    if (shouldToggleClock) {
+    if (parseBool(userData.shouldtoggle) ) {
         await funcs.toggleClock(clockActionSelector)
     }
 
     await funcs.getHours()
     await funcs.closeBrowser()
-
-    console.log(funcs.getStatus(process.env.RATE))
-    return funcs.getStatus(process.env.RATE)
+    
+    res.set('Content-Type','application/json')
+    res.send(funcs.getStatus(userData.rate))
  };
-const should = {
-    login: true,
-    enableDebugMode: true
-}
-
- getData(!should.login);
